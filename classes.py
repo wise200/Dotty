@@ -12,28 +12,30 @@ def convert(string, num):
 
 class Grid:
     
-    def __init__(self, index, maxDims):
+    def __init__(self, index, maxDims, screen):
         self.grid = grids[index]
-        
+        self.screen = screen
         width = maxDims[0] // len(self.grid[0])
         height = maxDims[1] // len(self.grid)
         self.boxSize = min(width, height)
         self.sizeCalc = self.boxSize+1
-        self.dotImg = pygame.image.load("yellowarrow.png").convert_alpha()
-        self.dotImg = pygame.transform.scale(self.dotImg, (self.boxSize-10, self.boxSize-10))
+        self.dotImg = pygame.image.load("bluedot.png").convert_alpha()
+        self.dotImg = pygame.transform.scale(self.dotImg, (self.boxSize, self.boxSize))
         
-    def resizeScreen(self, screen):
+        #Create dots
+        
+    def resizeScreen(self):
         pygame.display.quit()
         pygame.display.init()
         gridWidth = len(self.grid[0])
         gridHeight = len(self.grid)
         width = gridWidth * self.sizeCalc - 1
         height = gridHeight * self.sizeCalc - 1
-        screen = pygame.display.set_mode((width, height))
-        self.draw(screen)
-        return screen
+        self.screen = pygame.display.set_mode((width, height))
+        self.draw()
+        return self.screen
         
-    def draw(self, screen):
+    def draw(self):
         screen.fill((255,255,255))
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
@@ -41,8 +43,7 @@ class Grid:
                 color = colors[item]
                 rect = Rect(col*self.sizeCalc,row*self.sizeCalc,self.boxSize,self.boxSize)
                 pygame.draw.rect(screen, color, rect)
-                if item == '?':
-                    screen.blit(self.dotImg, (col*self.sizeCalc+5, row*self.sizeCalc+5))
+        
 
 					
 class Dot:
@@ -57,6 +58,24 @@ class Dot:
 			for c in range(len(self.grid[row])):
 				if not found and self.grid[r][c] == '?':
 					self.r, self.c = r, c
+    
+    def move(self):
+        self.r += self.deltaY()
+        self.c += self.deltaX()
+        
+    def turnRight(self):
+        self.direction = (self.direction + 1) % 4
+    
+    def deltaX(self):
+        return 0 if self.direction % 2 != 0 else self.direction - 2
+        
+    def deltaY(self):
+        if self.direction == 0:
+            return 1
+        elif self.direction == 3:
+            return -1
+        else
+            return 0
 	
 #Read colors and grid maps from levels.dat file
 with open("levels.dat", "r") as file:
