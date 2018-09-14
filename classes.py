@@ -34,10 +34,7 @@ class Grid:
         screen = pygame.display.set_mode((width, height))
         return screen
         
-    def draw(self):
-        self.drawWithDelay(1)
-    
-    def drawWithDelay(self, delay):
+    def draw(self, delay=1):
         self.screen.fill((255,255,255))
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
@@ -95,12 +92,12 @@ class Dot:
     def inBounds(self, r, c):
         return r >= 0 and r < len(Dot.grid.grid) and c >= 0 and c < len(Dot.grid.grid[0])
     
-    def pickUpTrash(self):
+    def pickUpTrash(self, delay=1):
         if Dot.grid.grid[self.r][self.c] == '@' and self.alive:
             Dot.grid.grid[self.r][self.c] = '#'
-            Dot.grid.draw()
+            Dot.grid.draw(delay)
     
-    def move(self):
+    def move(self, delay=1):
         if self.alive:
             r = self.r + self.deltaR()
             c = self.c + self.deltaC()
@@ -108,12 +105,12 @@ class Dot:
                 self.r = r
                 self.c = c
             self.alive = self.legalMove(r, c)
-            Dot.grid.draw()
+            Dot.grid.draw(delay)
         
-    def turnRight(self):
+    def turnRight(self, delay=1):
         if self.alive:
             self.direction = (self.direction + 1) % 4
-            Dot.grid.draw()
+            Dot.grid.draw(delay)
     
     def deltaC(self):
         return 0 if self.direction % 2 == 0 else self.direction - 2
